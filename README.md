@@ -61,12 +61,12 @@ libman install jquery@3.2.1 --provider cdnjs --destination wwwroot/scripts/jquer
 
 To create an optimised version of the app:
 
-### Health.API
+* **Health.API**
 ```bash
 dotnet watch run
 ```
 
-### CORSClient
+* **CORSClient**
 ```bash
 dotnet watch run
 ```
