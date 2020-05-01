@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Health.API.Models;
 using Health.API.Models.Context;
 using Microsoft.AspNetCore.Cors;
+using Health.API.DTO;
 
 namespace social_media.API.Controllers
 {
@@ -30,6 +31,36 @@ namespace social_media.API.Controllers
             .Include(x => x.Ailments)
             .Include(x => x.Medications)
             .ToListAsync();
+        }
+
+        // GET: api/patients/search?page=1&sortOrder=name&q=tom
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Patient>>> GetPatientsPage(int page = 1, int pageSize = 2,
+                                                                              string q = "", string sortOrder = "")
+        {
+
+            IQueryable<Patient> patients = from p in _context.Patients
+                                           select p;
+
+            if (!String.IsNullOrEmpty(q))
+                patients = patients.Where(s => s.Name.Contains(q));
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    patients = patients.OrderByDescending(s => s.Name);
+                    break;
+                case "name":
+                    patients = patients.OrderBy(s => s.Name);
+                    break;
+                default:
+                    patients = patients.OrderBy(s => s.Name);
+                    break;
+            }
+
+            var data = await PaginatedList<Patient>.CreateAsync(patients.AsNoTracking(), page, pageSize);
+
+            return data;
         }
 
         // GET: api/Patiens/5
